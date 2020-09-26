@@ -2,14 +2,15 @@
 
 A script that automatically interacts with router's config pages and disables DHCP.
 
-## How to run
+## Running Router Scraper
 1. Download the chrome driver from https://sites.google.com/a/chromium.org/chromedriver/downloads and put it in the current directory
-2. Install ```selenium for python``` on https://selenium-python.readthedocs.io/installation.html
-3. Run on any terminal
+2. Open any terminal
     ```
+        git clone https://github.com/nyu-mlab/router-scraper.git
+        cd router-scraper
+        pip install -r requirements.txt
         python crawler.py
     ```
 ## TODO :white_check_mark:
-- [ ] Optimize code structure
-- [ ] Write a simple script to help user download the dependency
+- [ ] Implement code for **Router need a password to log in** situation
 

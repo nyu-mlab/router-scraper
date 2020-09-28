@@ -1,1 +1,3 @@
 crawler-venv
+__pycache__
+chromedriver.exe

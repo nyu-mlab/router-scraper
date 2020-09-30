@@ -51,20 +51,23 @@ def selenium_get(url):
     driver.get(url)
 
     #check if first page needs password for login or not
-    password = driver.find_element_by_xpath("//input[contains(@type,'password')]")
-    
-    if password.is_displayed():
-        while password.is_displayed():
-            print('The router needs password to login!')
-            login_pass = input("Please enter your router's Admin password(Not the one for WIFI connection): ")
-            password.send_keys(login_pass)
-            driver.find_element_by_tag_name('button').click()
-            driver.implicitly_wait(1)
-            password = driver.find_element_by_xpath("//input[contains(@type,'password')]")
-        print('Login successfully!')
-    else:
-        print('The router does not need password to login!')
+    try:
+        password = driver.find_element_by_xpath("//input[contains(@type,'password')]")
 
+        if password.is_displayed():
+            while password.is_displayed():
+                print('The router needs password to login!')
+                login_pass = input("Please enter your router's Admin password(Not the one for WIFI connection): ")
+                password.send_keys(login_pass)
+                driver.find_element_by_tag_name('button').click()
+                driver.implicitly_wait(1)
+                password = driver.find_element_by_xpath("//input[contains(@type,'password')]")
+            print('Login successfully!')
+        else:
+            print('The router does not need password to login!')
+    except:
+        print("ERROR: Can not find 'password' element")
+    
     # Iterate through the menu
     index = driver.find_elements_by_xpath("//li/child::a[@href]")
     for ibutton in index:

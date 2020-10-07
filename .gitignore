@@ -1,3 +1,5 @@
 crawler-venv
 __pycache__
-chromedriver.exe
+*.exe
+*.log
+test.py

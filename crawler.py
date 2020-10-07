@@ -1,8 +1,8 @@
 import os
+import json
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,15 +13,30 @@ import time
 from find_gateway import find_gateway
 
 def main():
-    url = find_gateway()
+    # load data from config file 
+    with open('router.json') as f:
+        data = json.load(f)
+
+    url = data['default_gateway']
+    if len(url) == 0:
+        print('Config router IP address automatically...')
+        url = find_gateway()
+    else:
+        url = "http://" + url
+
     print(f'The router gateway is: {url}')
+
+    if len(username := data['username']) == 0:
+        print('Router do not need username')
+    if len(password := data['password']) == 0:
+        print('Router do not need password')
 
     start_time = time.time()
     # requests
     # requests_get(url)
 
     # selenium
-    selenium_get(url)
+    selenium_get(url, username, password)
 
     # pyppeteer
     # asyncio.get_event_loop().run_until_complete(pyppeteer_get(url))
@@ -39,29 +54,21 @@ def requests_get(url):
         print(tag)
 
 
-def selenium_get(url):
+def selenium_get(url, username, password):
     '''Use selenium to get html'''
 
-    chrome_options = Options()
-    # chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--window-size=1920x1080")
-
-    chrome_driver = os.getcwd() +"\\chromedriver.exe"
-    driver = webdriver.Chrome(options=chrome_options, executable_path=chrome_driver)
+    driver = set_driver()
     driver.get(url)
 
+    time.sleep(4)
     #check if first page needs password for login or not
     try:
-        password = driver.find_element_by_xpath("//input[contains(@type,'password')]")
-
-        if password.is_displayed():
-            while password.is_displayed():
-                print('The router needs password to login!')
-                login_pass = input("Please enter your router's Admin password(Not the one for WIFI connection): ")
-                password.send_keys(login_pass)
-                driver.find_element_by_tag_name('button').click()
-                driver.implicitly_wait(1)
-                password = driver.find_element_by_xpath("//input[contains(@type,'password')]")
+        pwdfield = driver.find_element_by_xpath("//input[contains(@type,'password')]")
+ 
+        if pwdfield.is_displayed() and len(password) > 0:
+            pwdfield.send_keys(password)
+            driver.find_element_by_tag_name('button').click()
+            time.sleep(4)
             print('Login successfully!')
         else:
             print('The router does not need password to login!')
@@ -70,6 +77,7 @@ def selenium_get(url):
     
     # Iterate through the menu
     index = driver.find_elements_by_xpath("//li/child::a[@href]")
+    print(len(index))
     for ibutton in index:
         if EC.element_to_be_clickable(ibutton) and (len(ibutton.text) > 0):
             ibutton.click()
@@ -89,6 +97,30 @@ def selenium_get(url):
     # submit_button.click()
     
     driver.quit()
+
+def set_driver():
+    chrome_driver = 'chromedriver.exe'
+    firefox_driver = 'geckodriver.exe'
+
+    # TODO: Actually, this try...catch does not work
+    try:
+        if os.path.exists(chrome_driver):
+            path = os.getcwd() + '\\' + chrome_driver
+            options = webdriver.ChromeOptions()
+
+            # options.add_argument("--headless")
+            options.add_argument("--window-size=1920x1080")
+            return webdriver.Chrome(options=options, executable_path=path)
+
+        elif os.path.exists(firefox_driver):
+            path = os.getcwd() + '\\' + firefox_driver
+            options = webdriver.FirefoxOptions()
+        
+            # options.add_argument("--headless")
+            options.add_argument("--window-size=1920x1080")
+            return webdriver.Firefox(options=options, executable_path=path)
+    except:
+        print('ERROR: Please download chromedriver or geckodriver(Firefox) and put it in this directory!')
 
 
 async def pyppeteer_get(url):

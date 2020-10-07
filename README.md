@@ -8,7 +8,7 @@ A script that automatically interacts with router's config pages and disables DH
     git clone https://github.com/nyu-mlab/router-scraper.git
     cd router-scraper
     ```
-2. Download the Chrome driver from https://sites.google.com/a/chromium.org/chromedriver/downloads and put it in the directory
+2. Download the Chrome driver from [chromedriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) and put it in the directory. You can also down load Firefox driver from [geckodriver](https://github.com/mozilla/geckodriver/releases/).
 3. (Option) You can set up a python virtual environment before running project, you can also change the virtual environment name
     ```crawler-venv``` to any name you like
     ```

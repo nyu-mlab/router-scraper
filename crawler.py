@@ -1,14 +1,8 @@
 import os
 import json
-import requests
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-import asyncio
-from pyppeteer import launch
 import time
 from find_gateway import find_gateway
 
@@ -42,16 +36,6 @@ def main():
     # asyncio.get_event_loop().run_until_complete(pyppeteer_get(url))
 
     print(f"It takes {(time.time() - start_time)} s."  )
-
-def requests_get(url):
-    '''Use requests to get html'''
-
-    html = requests.get(url, allow_redirects=True)
-    html.encoding = html.apparent_encoding
-    soup = BeautifulSoup(html.text, 'lxml')
-
-    for tag in soup.find_all(type='password'):
-        print(tag)
 
 
 def selenium_get(url, username, password):
@@ -122,16 +106,6 @@ def set_driver():
     except:
         print('ERROR: Please download chromedriver or geckodriver(Firefox) and put it in this directory!')
 
-
-async def pyppeteer_get(url):
-    '''Use pyppeteer to get html'''
-
-    browser = await launch()
-    context = await browser.createIncognitoBrowserContext()
-    page = await context.newPage()
-    await page.goto(url)
-    await page.content()
-    await browser.close()
 
 
 if __name__ == "__main__":

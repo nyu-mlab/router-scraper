@@ -1,5 +1,5 @@
 {
-    "default_gateway": "10.250.53.78",
-    "username": "",
+    "default_gateway": "192.168.0.1",
+    "username": "admin",
     "password": "admin"
 }

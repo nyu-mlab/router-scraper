@@ -45,6 +45,17 @@ def selenium_get(url, username, password):
     driver.get(url)
 
     time.sleep(4)
+    #check if first page needs username for login or not
+    try:
+        usrfield = driver.find_element_by_xpath("//input[contains(@type,'text')]")
+ 
+        if usrfield.is_displayed() and len(username) > 0:
+            usrfield.send_keys(username)
+        else:
+            print('The router does not need username!')
+    except:
+        print("ERROR: Can not find 'username' element")
+
     #check if first page needs password for login or not
     try:
         pwdfield = driver.find_element_by_xpath("//input[contains(@type,'password')]")
@@ -83,28 +94,28 @@ def selenium_get(url, username, password):
     driver.quit()
 
 def set_driver():
+    '''Set appropriate driver for selenium'''
+
     chrome_driver = 'chromedriver.exe'
     firefox_driver = 'geckodriver.exe'
 
-    # TODO: Actually, this try...catch does not work
-    try:
-        if os.path.exists(chrome_driver):
-            path = os.getcwd() + '\\' + chrome_driver
-            options = webdriver.ChromeOptions()
+    if os.path.exists(chrome_driver):
+        path = os.getcwd() + '\\' + chrome_driver
+        options = webdriver.ChromeOptions()
 
-            # options.add_argument("--headless")
-            options.add_argument("--window-size=1920x1080")
-            return webdriver.Chrome(options=options, executable_path=path)
+        # options.add_argument("--headless")
+        options.add_argument("--window-size=1920x1080")
+        return webdriver.Chrome(options=options, executable_path=path)
 
-        elif os.path.exists(firefox_driver):
-            path = os.getcwd() + '\\' + firefox_driver
-            options = webdriver.FirefoxOptions()
-        
-            # options.add_argument("--headless")
-            options.add_argument("--window-size=1920x1080")
-            return webdriver.Firefox(options=options, executable_path=path)
-    except:
-        print('ERROR: Please download chromedriver or geckodriver(Firefox) and put it in this directory!')
+    elif os.path.exists(firefox_driver):
+        path = os.getcwd() + '\\' + firefox_driver
+        options = webdriver.FirefoxOptions()
+    
+        # options.add_argument("--headless")
+        options.add_argument("--window-size=1920x1080")
+        return webdriver.Firefox(options=options, executable_path=path)
+    else:
+        raise FileNotFoundError('Chromedriver or geckodriver(Firefox) not found!')
 
 
 

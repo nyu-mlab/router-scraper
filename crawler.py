@@ -1,6 +1,7 @@
 import os
 import json
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -45,30 +46,38 @@ def selenium_get(url, username, password):
     driver.get(url)
 
     time.sleep(4)
-    #check if first page needs username for login or not
+    # check if first page needs username for login or not
     try:
         usrfield = driver.find_element_by_xpath("//input[contains(@type,'text')]")
  
         if usrfield.is_displayed() and len(username) > 0:
             usrfield.send_keys(username)
+            print('Auto fill the username')
         else:
             print('The router does not need username!')
     except:
         print("ERROR: Can not find 'username' element")
 
-    #check if first page needs password for login or not
+    # check if first page needs password for login or not
     try:
         pwdfield = driver.find_element_by_xpath("//input[contains(@type,'password')]")
  
         if pwdfield.is_displayed() and len(password) > 0:
             pwdfield.send_keys(password)
-            driver.find_element_by_tag_name('button').click()
-            time.sleep(4)
-            print('Login successfully!')
+            print('Auto fill the password')
         else:
             print('The router does not need password to login!')
     except:
         print("ERROR: Can not find 'password' element")
+
+    # click login button
+    try:
+        pwdfield = driver.find_element_by_xpath("//input[contains(@type,'password')]")
+        pwdfield.send_keys(Keys.ENTER)
+        time.sleep(4)
+        print('Login successfully!')
+    except:
+        print("ERROR: Can not find 'login' button")
     
     # Iterate through the menu
     index = driver.find_elements_by_xpath("//li/child::a[@href]")
@@ -98,6 +107,7 @@ def set_driver():
 
     chrome_driver = 'chromedriver.exe'
     firefox_driver = 'geckodriver.exe'
+    proxy_access()
 
     if os.path.exists(chrome_driver):
         path = os.getcwd() + '\\' + chrome_driver
@@ -110,14 +120,36 @@ def set_driver():
     elif os.path.exists(firefox_driver):
         path = os.getcwd() + '\\' + firefox_driver
         options = webdriver.FirefoxOptions()
-    
+        
         # options.add_argument("--headless")
         options.add_argument("--window-size=1920x1080")
-        return webdriver.Firefox(options=options, executable_path=path)
+        return webdriver.Firefox(options=options, executable_path=path,)
     else:
         raise FileNotFoundError('Chromedriver or geckodriver(Firefox) not found!')
 
 
+def proxy_access():
+    '''Only for proxy access test'''
+
+    webdriver.DesiredCapabilities.CHROME['proxy'] = {
+        "proxyType": "manual",
+        "socksProxy": "localhost:1081",
+        "socksVersion": 5,
+    }
+    webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
+        "proxyType": "manual",
+        "socksProxy": "localhost:1081",
+        "socksVersion": 5,
+    }
+
+    # For firefox, another way to config proxy
+    # profiles = webdriver.FirefoxProfile()
+    # profiles.set_preference('network.proxy.type', 1)
+    # profiles.set_preference('network.proxy.socks', 'localhost')
+    # profiles.set_preference('network.proxy.socks_port', 1081)
+    # profiles.set_preference('network.proxy.socks_version', 5)
+    # webdriver.Firefox(options=options, firefox_profile = profiles, executable_path=path,)
+    
 
 if __name__ == "__main__":
     main()

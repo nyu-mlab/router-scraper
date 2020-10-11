@@ -81,6 +81,10 @@ def selenium_get(url, username, password):
     
     # Iterate through the menu
     index = driver.find_elements_by_xpath("//li/child::a[@href]")
+    
+    # page = driver.find_element_by_xpath('//*')
+    # element = page.get_attribute('innerHTML')
+    # print(element)
     print(len(index))
     for ibutton in index:
         if EC.element_to_be_clickable(ibutton) and (len(ibutton.text) > 0):
@@ -115,6 +119,9 @@ def set_driver():
 
         # options.add_argument("--headless")
         options.add_argument("--window-size=1920x1080")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        options.add_argument("--disable-blink-features=AutomationControlled")
         return webdriver.Chrome(options=options, executable_path=path)
 
     elif os.path.exists(firefox_driver):
